@@ -5,7 +5,7 @@ from aiogram import Dispatcher, Router
 from aiogram.filters import Command
 from aiogram.types import Message
 
-from bot.keyboard import support_keyboard, t4_trade_keyboard, multibank_fx_keyboard
+from keyboard import support_keyboard, t4_trade_keyboard, multibank_fx_keyboard
 from routers import RouterService
 from settings import BOT
 
