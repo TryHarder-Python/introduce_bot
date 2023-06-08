@@ -27,14 +27,19 @@ async def channel_url_handler(message: Message, bot: Bot, state: FSMContext) -> 
     if not any(i for i in data if i.user.id == bot.id and i.can_post_messages):
         await message.answer('I am not in this channel or have not permission to post messages')
         return
-    await state.set_state(RepostState.send_text)
     await state.set_data({'chat_id': chat_id}, )
+    await change_text_handler(message, state)
+
+
+@repost_router.message(F.text == 'Change text')
+async def change_text_handler(message: Message, state: FSMContext) -> None:
+    await state.set_state(RepostState.send_text)
     await message.answer('Send post text', reply_markup=reply_markups.revert_to_chanel_setup())
 
 
-@repost_router.message(RepostState.send_text, F.text)
+@repost_router.message(RepostState.send_text)
 async def send_text_handler(message: Message, state: FSMContext) -> None:
-    await state.update_data(text=message.text)
+    await state.update_data(message_id=message.message_id)
     await state.set_state(RepostState.choice_url)
     await message.answer(
         'Send url for post buttons in format: \n'
@@ -56,11 +61,13 @@ async def choice_url_handler(message: Message, state: FSMContext) -> None:
     await message.answer('Now you can a post to your channel', reply_markup=reply_markups.default_menu())
 
 
-@repost_router.message(F.text == 'Preview post')
-async def preview_post_handler(message: Message, state: FSMContext) -> None:
+@repost_router.message(F.text == 'Preview post', RepostState.preview_post)
+async def preview_post_handler(message: Message, state: FSMContext, bot: Bot) -> None:
     data = await state.get_data()
-    await message.answer(
-        data['text'],
+    await bot.copy_message(
+        chat_id=message.chat.id,
+        from_chat_id=message.chat.id,
+        message_id=data['message_id'],
         reply_markup=inline_markups.url_buttons(data['buttons'])
     )
 
@@ -68,9 +75,10 @@ async def preview_post_handler(message: Message, state: FSMContext) -> None:
 @repost_router.message(F.text == 'Send post')
 async def send_post_handler(message: Message, bot: Bot, state: FSMContext) -> None:
     data = await state.get_data()
-    await bot.send_message(
+    await bot.copy_message(
         chat_id=data['chat_id'],
-        text=data['text'],
+        from_chat_id=message.chat.id,
+        message_id=data['message_id'],
         reply_markup=inline_markups.url_buttons(data['buttons'])
     )
     await message.answer('Post sent')

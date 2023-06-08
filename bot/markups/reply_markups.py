@@ -26,6 +26,7 @@ def default_menu() -> ReplyKeyboardMarkup:
     builder.add(
         KeyboardButton(text="Preview post"),
         KeyboardButton(text="Send post"),
+        KeyboardButton(text="Change text"),
         KeyboardButton(text="Return to set channel for repost"),
     )
     builder.adjust(2)
