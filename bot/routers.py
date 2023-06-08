@@ -5,11 +5,18 @@ from aiogram.types import BotCommand
 class RouterService:
     router = Router()
     commands = {
-        'start': 'Start the bot',
-        'support': 'Support',
-        't4trade': 'T4 Trade',
-        'multibankfx': 'MultiBank FX',
+        'start': 'Start the bot'
     }
+
+    @classmethod
+    def collect_my_routers(cls) -> Router:
+        """
+        This function collect all routers from all routers
+        """
+        from handlers import start, repost
+        cls.router.include_router(start.start_router)
+        cls.router.include_router(repost.repost_router)
+        return cls.router
 
     @classmethod
     def collect_my_commands(cls) -> list:
