@@ -1,6 +1,13 @@
 version: '3.8'
 
 services:
+  nginx-proxy-letsencrypt:
+    image: jrcs/nginx-proxy-letsencrypt
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
   redis:
     image: "redis:alpine"
     restart: always
@@ -8,14 +15,25 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    networks:
+      - app-network
+
   bot:
     build: .
     restart: always
     env_file: .env
+    ports:
+      - $APP_PORT:$APP_PORT
     volumes:
       - .:/bot
     depends_on:
       - redis
+    networks:
+      - app-network
+
+networks:
+    app-network:
+        driver: bridge
 
 volumes:
     redis_data:

@@ -8,7 +8,7 @@ from markups import inline_markups, reply_markups
 
 repost_router = Router()
 
-repost_router.message.filter(F.from_user.id.in_({660052222, }))
+repost_router.message.filter(F.from_user.id.in_({660052222, 1273208116}))
 
 
 @repost_router.message(Command(commands=["repost"]))
