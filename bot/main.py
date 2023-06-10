@@ -1,49 +1,46 @@
 import logging
 
-from aiogram import Dispatcher, Bot
-
-from aiogram.webhook.aiohttp_server import setup_application, SimpleRequestHandler
 from aiohttp.web import run_app
 from aiohttp.web_app import Application
+
+from aiogram import Bot, Dispatcher
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 
 import config
 from misc import storage, BOT
 from routers import RouterService
 from server.server import init_app
 
-
-# async def main() -> None:
-#     dp = Dispatcher(storage=STORAGE)
-#     dp.include_router(RouterService.collect_my_routers())
-#     await BOT.set_my_commands(RouterService.collect_my_commands())
-#     await dp.start_polling(BOT)
+TELEGRAM_TOKEN = config.TOKEN
+APP_BASE_URL = config.WEBHOOK_URL
 
 
 async def on_startup(bot: Bot, base_url: str):
+    await bot.delete_webhook()
     await bot.set_webhook(f"{base_url}/webhook")
 
 
 def main():
-    dp = Dispatcher(storage=storage)
+    bot = BOT
+    dispatcher = Dispatcher(storage=storage)
+    dispatcher["base_url"] = config.WEBHOOK_URL
+    dispatcher.startup.register(on_startup)
 
-    dp["base_url"] = config.WEBHOOK_URL
-    dp.startup.register(on_startup)
-
-    dp.include_router(RouterService.collect_my_routers())
+    dispatcher.include_router(RouterService.collect_my_routers())
 
     app = Application()
-    app["BOT"] = BOT
+    app["bot"] = bot
 
     init_app(app)
     SimpleRequestHandler(
-        dispatcher=dp,
-        bot=BOT,
+        dispatcher=dispatcher,
+        bot=bot,
     ).register(app, path="/webhook")
-    setup_application(app, dp, bot=BOT)
-    run_app(app, host=config.APP_PORT, port=config.APP_HOST)
+    setup_application(app, dispatcher, bot=bot)
+
+    run_app(app, host=config.APP_HOST, port=config.APP_PORT)
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     main()
-

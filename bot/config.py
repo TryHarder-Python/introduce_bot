@@ -12,7 +12,7 @@ TOKEN = os.getenv('TOKEN')
 
 REDIS_URL = os.getenv('REDIS_URL', 'redis://127.0.0.1:6378')
 
-WEBHOOK_URL = os.getenv('WEBHOOK_URL', 'https://d525-194-104-22-246.ngrok-free.app')
+WEBHOOK_URL = os.getenv('WEBHOOK_HOST')
 
 APP_HOST = os.getenv('APP_HOST', default='localhost')
 APP_PORT = os.getenv('APP_PORT', default=5000)

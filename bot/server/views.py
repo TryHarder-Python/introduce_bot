@@ -5,8 +5,7 @@ from aiohttp.web_response import json_response
 
 
 async def check_data_handler(request: web.Request):
-    bot: Bot = request.app["BOT"]
-
+    bot: Bot = request.app["bot"]
     data = await request.post()
     if check_webapp_signature(bot.token, data["_auth"]):
         return json_response({"ok": True})
