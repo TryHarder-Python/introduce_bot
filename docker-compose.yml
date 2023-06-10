@@ -1,22 +1,30 @@
 version: '3.8'
 
 services:
-  nginx-proxy-letsencrypt:
-    image: jrcs/nginx-proxy-letsencrypt
+  nginx:
+    image: nginx:latest
+    env_file: .env
     ports:
       - "80:80"
       - "443:443"
+    restart: always
     volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./nginx/first_start/:/etc/nginx/templates/:ro
+      # - ./nginx/templates/:/etc/nginx/templates/:ro
+      - ./certbot/www:/var/www/certbot/:ro
+      - ./certbot/conf/:/etc/nginx/ssl/:ro
+
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/letsencrypt/:rw
+
   redis:
     image: "redis:alpine"
     restart: always
-    ports:
-      - "6379:6379"
     volumes:
       - redis_data:/data
-    networks:
-      - app-network
 
   bot:
     build: .
@@ -28,12 +36,6 @@ services:
       - .:/bot
     depends_on:
       - redis
-    networks:
-      - app-network
-
-networks:
-    app-network:
-        driver: bridge
 
 volumes:
     redis_data:

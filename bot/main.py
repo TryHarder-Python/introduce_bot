@@ -40,7 +40,7 @@ def main():
         bot=BOT,
     ).register(app, path="/webhook")
     setup_application(app, dp, bot=BOT)
-    run_app(app, host="127.0.0.1", port=8080)
+    run_app(app, host=config.APP_PORT, port=config.APP_HOST)
 
 
 if __name__ == "__main__":
