@@ -10,7 +10,7 @@ load_dotenv(dotenv_path=ENV_PATH)
 
 TOKEN = os.getenv('TOKEN')
 
-REDIS_URL = os.getenv('REDIS_URL', 'redis://127.0.0.1:6378')
+REDIS_URL = os.getenv('REDIS_URL', 'redis://redis:6379')
 
 WEBHOOK_URL = os.getenv('WEBHOOK_HOST')
 
