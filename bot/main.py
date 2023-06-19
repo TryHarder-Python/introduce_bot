@@ -17,7 +17,7 @@ APP_BASE_URL = config.WEBHOOK_URL
 
 
 async def on_startup(bot: Bot, base_url: str):
-    await bot.delete_webhook()
+    await bot.delete_webhook(drop_pending_updates=True)
     await bot.set_webhook(f"{base_url}/webhook")
 
 
