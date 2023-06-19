@@ -9,6 +9,8 @@ class EntitiesFilter(BaseFilter):
         self.entities_types = entities_types
 
     async def __call__(self, message: Message) -> bool | dict:
+        if message.entities is None:
+            return False
         if isinstance(self.entities_types, str):
             entities = [
                 entity.extract_from(message.text) for entity in message.entities if entity.type == self.entities_types

@@ -3,6 +3,8 @@ from aiogram import Router, F, Bot
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
+
+from generics.filters import EntitiesFilter
 from generics.states import RepostState
 from markups import inline_markups, reply_markups
 
@@ -49,7 +51,7 @@ async def send_text_handler(message: Message, state: FSMContext) -> None:
     )
 
 
-@repost_router.message(RepostState.choice_url, F.text)
+@repost_router.message(RepostState.choice_url, F.text.regexp(r'^.* - .*'), EntitiesFilter('url'))
 async def choice_url_handler(message: Message, state: FSMContext) -> None:
     text = message.text
     buttons = {}
@@ -59,6 +61,17 @@ async def choice_url_handler(message: Message, state: FSMContext) -> None:
     await state.update_data(buttons={**buttons})
     await state.set_state(RepostState.preview_post)
     await message.answer('Now you can a post to your channel', reply_markup=reply_markups.default_menu())
+
+
+@repost_router.message(RepostState.choice_url)
+async def invalid_text(message: Message) -> None:
+    await message.answer(
+        'Invalid text, send url for post buttons in format: \n'
+        'Button 1 - https://google.com\n'
+        'Button 2 - http://example.com\n',
+        reply_markup=reply_markups.default_url_setup(),
+    )
+
 
 
 @repost_router.message(F.text == 'Preview post', RepostState.preview_post)
