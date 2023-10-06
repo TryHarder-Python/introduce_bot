@@ -14,6 +14,11 @@ update_router = Router()
     F.chat.type == ChatType.CHANNEL
 )
 async def welcome(event: ChatMemberUpdated) -> Any:
-    return event.answer()
+    return await event.bot.send_message(
+        chat_id=event.from_user.id,
+        text='Hey there 👋🏼 Brad here from the Weekly Investor! '
+             'Thanks for subscribing to our channel. Need more information on how our trading systems work? 🙌🏼 '
+             'You can reach me here @WeeklyInvestorSupport!'
+    )
 
 

@@ -20,9 +20,10 @@ class RouterService:
         """
         This function collect all routers from all routers
         """
-        from handlers import start, repost
+        from handlers import start, repost, update
         cls.router.include_router(start.start_router)
         cls.router.include_router(repost.repost_router)
+        cls.router.include_router(update.update_router)
         return cls.router
 
     @classmethod
