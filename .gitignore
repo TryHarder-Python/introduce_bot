@@ -58,3 +58,6 @@ experimental/*
 
 # Doc's
 docs/html
+
+certbot
+certbot/*
