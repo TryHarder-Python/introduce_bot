@@ -16,9 +16,10 @@ update_router = Router()
 async def welcome(event: ChatMemberUpdated) -> Any:
     return await event.bot.send_message(
         chat_id=event.from_user.id,
-        text=
-        'Hey there 👋🏼 Brad here from the Weekly Investor! Thanks for subscribing to our channel. '
-        'If you need more information on how our trading systems work, you can reach me at @WeeklyInvestorSupport 📥'
+        text=(
+            'Hey there 👋🏼 Brad here from the Weekly Investor! Thanks for subscribing to our channel.\n'
+            'If you need more information on how our trading systems work, you can reach me at @WeeklyInvestorSupport 📥'
+        ),
     )
 
 
