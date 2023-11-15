@@ -10,5 +10,5 @@ async def command_start_handler(message: Message) -> None:
     await message.answer(
         'Welcome! Subscribe to this channel:\n'
         '⬇️⬇️⬇️⬇️\n'
-        'https://t.me/+EyCaGA8aOhBiZTlk',
+        'https://t.me/weeklyinvestor',
     )
