@@ -1,8 +1,9 @@
 from aiogram import Router, F, Bot
+from aiogram.exceptions import TelegramBadRequest, TelegramForbiddenError
 
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message
+from aiogram.types import Message, ReplyKeyboardRemove
 
 from generics.filters import EntitiesFilter
 from generics.states import RepostState
@@ -19,16 +20,13 @@ async def repost_handler(message: Message, state: FSMContext) -> None:
     await state.set_state(None)
     await message.answer(
         'Forward me a message from channel, where i am have permission to post',
+        reply_markup=ReplyKeyboardRemove(),
     )
 
 
 @repost_router.message(F.forward_from_chat)
-async def channel_url_handler(message: Message, bot: Bot, state: FSMContext) -> None:
+async def channel_url_handler(message: Message, state: FSMContext) -> None:
     chat_id = message.forward_from_chat.id
-    data = await bot.get_chat_administrators(chat_id=chat_id)
-    if not any(i for i in data if i.user.id == bot.id and i.can_post_messages):
-        await message.answer('I am not in this channel or have not permission to post messages')
-        return
     await state.set_data({'chat_id': chat_id}, )
     await change_text_handler(message, state)
 
@@ -88,12 +86,16 @@ async def preview_post_handler(message: Message, state: FSMContext, bot: Bot) ->
 @repost_router.message(F.text == 'Send post')
 async def send_post_handler(message: Message, bot: Bot, state: FSMContext) -> None:
     data = await state.get_data()
-    await bot.copy_message(
-        chat_id=data['chat_id'],
-        from_chat_id=message.chat.id,
-        message_id=data['message_id'],
-        reply_markup=inline_markups.url_buttons(data['buttons'])
-    )
+    try:
+        await bot.copy_message(
+            chat_id=data['chat_id'],
+            from_chat_id=message.chat.id,
+            message_id=data['message_id'],
+            reply_markup=inline_markups.url_buttons(data['buttons'])
+        )
+    except (TelegramBadRequest, TelegramForbiddenError):
+        await message.answer('Error, check your channel permissions')
+        return
     await message.answer('Post sent')
 
 
