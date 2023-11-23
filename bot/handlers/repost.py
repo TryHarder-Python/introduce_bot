@@ -71,7 +71,6 @@ async def invalid_text(message: Message) -> None:
     )
 
 
-
 @repost_router.message(F.text == 'Preview post', RepostState.preview_post)
 async def preview_post_handler(message: Message, state: FSMContext, bot: Bot) -> None:
     data = await state.get_data()
