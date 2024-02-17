@@ -15,8 +15,8 @@ class RouterService:
         """
         from handlers import start, repost, update
         cls.router.include_router(start.start_router)
-        # cls.router.include_router(repost.repost_router)
-        # cls.router.include_router(update.update_router)
+        cls.router.include_router(repost.repost_router)
+        cls.router.include_router(update.update_router)
         return cls.router
 
     @classmethod
